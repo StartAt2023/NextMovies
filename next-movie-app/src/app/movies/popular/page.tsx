@@ -2,10 +2,9 @@
 
 import { useEffect } from 'react';
 import { useMovieStore } from '@/stores/movieStore';
-import { useUserStore } from '@/stores/userStore';
 import { TMDBService } from '@/services/tmdb';
-import MovieCard from '@/components/MovieCard';
-import Header from '@/components/Header';
+import CleanMovieCard from '@/components/CleanMovieCard';
+import CleanHeader from '@/components/CleanHeader';
 import { Loader2, AlertCircle } from 'lucide-react';
 
 export default function PopularMoviesPage() {
@@ -18,7 +17,7 @@ export default function PopularMoviesPage() {
     setError,
   } = useMovieStore();
 
-  const { isFavorite, isInWatchlist } = useUserStore();
+  // Note: User store functionality removed for simplicity
 
   useEffect(() => {
     const loadPopularMovies = async () => {
@@ -27,8 +26,8 @@ export default function PopularMoviesPage() {
         setError(null);
         const response = await TMDBService.getPopularMovies();
         setPopularMovies(response.results);
-      } catch (err: any) {
-        setError(err.message || 'Failed to load popular movies');
+      } catch (err: unknown) {
+        setError(err instanceof Error ? err.message : 'Failed to load popular movies');
       } finally {
         setLoading(false);
       }
@@ -39,7 +38,7 @@ export default function PopularMoviesPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <Header />
+      <CleanHeader />
       
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-8">
@@ -63,11 +62,9 @@ export default function PopularMoviesPage() {
         {!isLoading && !error && (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
             {popularMovies.map((movie) => (
-              <MovieCard
+              <CleanMovieCard
                 key={movie.id}
                 movie={movie}
-                isFavorite={isFavorite(movie.id)}
-                isInWatchlist={isInWatchlist(movie.id)}
               />
             ))}
           </div>

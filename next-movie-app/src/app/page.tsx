@@ -5,10 +5,11 @@ import { TMDBService } from '@/services/tmdb';
 import SearchBar from '@/components/SearchBar';
 import CleanMovieCard from '@/components/CleanMovieCard';
 import CleanHeader from '@/components/CleanHeader';
+import type { Movie } from '@/types';
 
 export default function Home() {
-  const [popularMovies, setPopularMovies] = useState<any[]>([]);
-  const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [popularMovies, setPopularMovies] = useState<Movie[]>([]);
+  const [searchResults, setSearchResults] = useState<Movie[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -23,9 +24,9 @@ export default function Home() {
         
         const response = await TMDBService.getPopularMovies();
         setPopularMovies(response.results);
-      } catch (err: any) {
+      } catch (err: unknown) {
         console.error('Error loading movies:', err);
-        setError(err.message || 'Failed to load movies');
+        setError(err instanceof Error ? err.message : 'Failed to load movies');
       } finally {
         setIsLoading(false);
       }
@@ -49,8 +50,8 @@ export default function Home() {
       const response = await TMDBService.searchMovies(query);
       setSearchResults(response.results);
       setActiveTab('search');
-    } catch (err: any) {
-      setError(err.message || 'Failed to search movies');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Failed to search movies');
     } finally {
       setIsLoading(false);
     }

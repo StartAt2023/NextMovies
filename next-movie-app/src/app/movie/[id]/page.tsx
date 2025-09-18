@@ -4,13 +4,12 @@ import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowLeft, Heart, Bookmark, Star, Calendar, Clock, DollarSign, Users } from 'lucide-react';
+import { ArrowLeft, Star, Calendar, Clock, DollarSign, Users } from 'lucide-react';
 import { TMDBService, getBackdropUrl, getPosterUrl } from '@/services/tmdb';
-import { useUserStore } from '@/stores/userStore';
 import { useMovieStore } from '@/stores/movieStore';
-import Header from '@/components/Header';
-import MovieCard from '@/components/MovieCard';
-import type { MovieDetails } from '@/types';
+import CleanHeader from '@/components/CleanHeader';
+import CleanMovieCard from '@/components/CleanMovieCard';
+import type { MovieDetails, Movie } from '@/types';
 
 export default function MovieDetailsPage() {
   const params = useParams();
@@ -18,11 +17,11 @@ export default function MovieDetailsPage() {
   const movieId = parseInt(params.id as string);
   
   const [movieDetails, setMovieDetails] = useState<MovieDetails | null>(null);
-  const [similarMovies, setSimilarMovies] = useState<any[]>([]);
+  const [similarMovies, setSimilarMovies] = useState<Movie[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const { toggleFavorite, toggleWatchlist, isFavorite, isInWatchlist } = useUserStore();
+  // Note: User store functionality removed for simplicity
   const { setSimilarMovies: setStoreSimilarMovies } = useMovieStore();
 
   useEffect(() => {
@@ -39,8 +38,8 @@ export default function MovieDetailsPage() {
         setMovieDetails(details);
         setSimilarMovies(similar.results.slice(0, 6));
         setStoreSimilarMovies(similar.results);
-      } catch (err: any) {
-        setError(err.message || 'Failed to load movie details');
+      } catch (err: unknown) {
+        setError(err instanceof Error ? err.message : 'Failed to load movie details');
       } finally {
         setIsLoading(false);
       }
@@ -51,13 +50,7 @@ export default function MovieDetailsPage() {
     }
   }, [movieId, setStoreSimilarMovies]);
 
-  const handleFavorite = () => {
-    toggleFavorite(movieId);
-  };
-
-  const handleWatchlist = () => {
-    toggleWatchlist(movieId);
-  };
+  // Note: Favorite and watchlist functionality removed for simplicity
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
@@ -76,7 +69,7 @@ export default function MovieDetailsPage() {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-        <Header />
+        <CleanHeader />
         <div className="flex justify-center items-center py-12">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
         </div>
@@ -87,7 +80,7 @@ export default function MovieDetailsPage() {
   if (error || !movieDetails) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-        <Header />
+        <CleanHeader />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="text-center">
             <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
@@ -108,7 +101,7 @@ export default function MovieDetailsPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <Header />
+      <CleanHeader />
       
       {/* Hero Section */}
       <div className="relative h-96 lg:h-[500px] overflow-hidden">
@@ -149,7 +142,7 @@ export default function MovieDetailsPage() {
                 
                 {movieDetails.tagline && (
                   <p className="text-lg text-gray-300 mb-4 italic">
-                    "{movieDetails.tagline}"
+                    &ldquo;{movieDetails.tagline}&rdquo;
                   </p>
                 )}
                 
@@ -182,31 +175,7 @@ export default function MovieDetailsPage() {
                   ))}
                 </div>
                 
-                <div className="flex gap-4 mb-6">
-                  <button
-                    onClick={handleFavorite}
-                    className={`flex items-center px-4 py-2 rounded-lg transition-colors ${
-                      isFavorite(movieId)
-                        ? 'bg-red-600 text-white'
-                        : 'bg-white/20 text-white hover:bg-white/30'
-                    }`}
-                  >
-                    <Heart className={`w-5 h-5 mr-2 ${isFavorite(movieId) ? 'fill-current' : ''}`} />
-                    {isFavorite(movieId) ? 'Favorited' : 'Add to Favorites'}
-                  </button>
-                  
-                  <button
-                    onClick={handleWatchlist}
-                    className={`flex items-center px-4 py-2 rounded-lg transition-colors ${
-                      isInWatchlist(movieId)
-                        ? 'bg-blue-600 text-white'
-                        : 'bg-white/20 text-white hover:bg-white/30'
-                    }`}
-                  >
-                    <Bookmark className={`w-5 h-5 mr-2 ${isInWatchlist(movieId) ? 'fill-current' : ''}`} />
-                    {isInWatchlist(movieId) ? 'In Watchlist' : 'Add to Watchlist'}
-                  </button>
-                </div>
+                {/* Note: Favorite and watchlist buttons removed for simplicity */}
               </div>
             </div>
           </div>
@@ -235,11 +204,9 @@ export default function MovieDetailsPage() {
                 </h2>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                   {similarMovies.map((movie) => (
-                    <MovieCard
+                    <CleanMovieCard
                       key={movie.id}
                       movie={movie}
-                      isFavorite={isFavorite(movie.id)}
-                      isInWatchlist={isInWatchlist(movie.id)}
                     />
                   ))}
                 </div>

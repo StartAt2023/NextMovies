@@ -52,7 +52,7 @@ interface MovieState {
 
 export const useMovieStore = create<MovieState>()(
   devtools(
-    (set, get) => ({
+    (set) => ({
       // Initial state
       popularMovies: [],
       topRatedMovies: [],
