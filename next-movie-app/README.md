@@ -1,12 +1,11 @@
 # NextMovies - Movie Discovery App
 
-A modern, full-featured movie discovery application built with Next.js 15, TypeScript, Tailwind CSS, Zustand, and TMDB API. Features include user authentication, movie search, favorites, watchlist, and responsive design.
+A modern, full-featured movie discovery application built with Next.js 15, TypeScript, Tailwind CSS, Zustand, and TMDB API. Features include movie search, favorites, watchlist, and responsive design.
 
 ## 🚀 Features
 
 - **Movie Discovery**: Browse popular, top-rated, and upcoming movies
 - **Search Functionality**: Search movies by title with real-time results
-- **User Authentication**: Sign up/Sign in with email or Google OAuth
 - **Personal Lists**: Add movies to favorites and watchlist
 - **Movie Details**: Detailed movie information with similar recommendations
 - **Responsive Design**: Mobile-first design that works on all devices

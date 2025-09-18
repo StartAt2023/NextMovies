@@ -14,35 +14,19 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState<'popular' | 'search'>('popular');
 
-  console.log('Home page - Component rendered, state:', { 
-    popularMoviesCount: popularMovies.length,
-    searchResultsCount: searchResults.length,
-    isLoading, 
-    error,
-    searchQuery,
-    activeTab
-  });
 
   useEffect(() => {
-    console.log('Home page - useEffect triggered');
-    
     const loadMovies = async () => {
       try {
-        console.log('Home page - Starting to load movies...');
         setIsLoading(true);
         setError(null);
         
         const response = await TMDBService.getPopularMovies();
-        console.log('Home page - API response:', response);
-        console.log('Home page - Movies count:', response.results.length);
-        
         setPopularMovies(response.results);
-        console.log('Home page - Popular movies set in state');
       } catch (err: any) {
-        console.error('Home page - Error loading movies:', err);
+        console.error('Error loading movies:', err);
         setError(err.message || 'Failed to load movies');
       } finally {
-        console.log('Home page - Setting loading to false');
         setIsLoading(false);
       }
     };
@@ -76,11 +60,11 @@ export default function Home() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading movies...</p>
-          <p className="text-sm text-gray-500 mt-2">Movies loaded: {popularMovies.length}</p>
+          <div className="animate-spin rounded-full h-20 w-20 border-4 border-blue-200 border-t-blue-600 mx-auto mb-8"></div>
+          <p className="text-gray-600 text-xl font-medium">Loading movies...</p>
+          <p className="text-sm text-gray-500 mt-3">Movies loaded: {popularMovies.length}</p>
         </div>
       </div>
     );
@@ -88,55 +72,82 @@ export default function Home() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <p className="text-red-600 text-lg">Error: {error}</p>
-          <p className="text-sm text-gray-500 mt-2">Movies loaded: {popularMovies.length}</p>
+          <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-8">
+            <span className="text-red-600 text-3xl">⚠️</span>
+          </div>
+          <p className="text-red-600 text-xl font-medium">Error: {error}</p>
+          <p className="text-sm text-gray-500 mt-3">Movies loaded: {popularMovies.length}</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen">
       <CleanHeader />
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-8">
-          NextMovies - {currentMovies.length} Movies
-        </h1>
-        
-        {/* Search Bar */}
-        <div className="mb-8">
-          <SearchBar onSearch={handleSearch} />
+      
+      {/* Hero Section */}
+      <div className="relative bg-gradient-to-br from-blue-50 via-white to-purple-50 py-20">
+        <div className="w-full px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col items-center justify-center text-center mb-16">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6">
+              Discover Amazing Movies
+            </h1>
+            <p className="text-xl md:text-2xl text-gray-600 max-w-3xl mx-auto leading-relaxed mb-8">
+              Explore popular films, search for your favorites, and discover new cinematic experiences
+            </p>
+            
+            {/* Search Bar */}
+            <div className="w-full max-w-3xl">
+              <SearchBar onSearch={handleSearch} />
+            </div>
+          </div>
         </div>
+      </div>
+      
+      <div className="w-full px-4 sm:px-6 lg:px-8 py-16">
 
-        {/* Tab Navigation */}
-        <div className="flex space-x-1 mb-6">
-          <button
-            onClick={() => setActiveTab('popular')}
-            className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-              activeTab === 'popular'
-                ? 'bg-blue-600 text-white'
-                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-            }`}
-          >
-            Popular Movies ({popularMovies.length})
-          </button>
-          {searchQuery && (
+        {/* Section Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-12 gap-4">
+          <div>
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
+              {activeTab === 'search' ? 'Search Results' : 'Popular Movies'}
+            </h2>
+            <p className="text-gray-600 mt-2 text-lg">
+              {currentMovies.length} movies found
+            </p>
+          </div>
+          
+          {/* Tab Navigation */}
+          <div className="flex space-x-1 bg-gray-100 p-1 rounded-xl">
             <button
-              onClick={() => setActiveTab('search')}
-              className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                activeTab === 'search'
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+              onClick={() => setActiveTab('popular')}
+              className={`px-6 py-3 rounded-lg font-medium transition-all ${
+                activeTab === 'popular'
+                  ? 'bg-white text-blue-600 shadow-sm'
+                  : 'text-gray-600 hover:text-gray-900'
               }`}
             >
-              Search Results ({searchResults.length})
+              Popular ({popularMovies.length})
             </button>
-          )}
+            {searchQuery && (
+              <button
+                onClick={() => setActiveTab('search')}
+                className={`px-6 py-3 rounded-lg font-medium transition-all ${
+                  activeTab === 'search'
+                    ? 'bg-white text-blue-600 shadow-sm'
+                    : 'text-gray-600 hover:text-gray-900'
+                }`}
+              >
+                Search ({searchResults.length})
+              </button>
+            )}
+          </div>
         </div>
         
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-4 sm:gap-5 md:gap-6 lg:gap-7">
           {currentMovies.map((movie, index) => (
             <CleanMovieCard
               key={movie.id}
@@ -145,6 +156,18 @@ export default function Home() {
             />
           ))}
         </div>
+        
+        {currentMovies.length === 0 && !isLoading && (
+          <div className="text-center py-20">
+            <div className="w-32 h-32 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center mx-auto mb-8">
+              <span className="text-gray-400 text-5xl">🎬</span>
+            </div>
+            <h3 className="text-2xl font-semibold text-gray-900 mb-4">No movies found</h3>
+            <p className="text-gray-600 text-lg max-w-md mx-auto">
+              {searchQuery ? 'Try adjusting your search terms' : 'Check back later for new releases'}
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );
